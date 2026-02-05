@@ -153,21 +153,77 @@ export default function BillingPage() {
         </Table>
       </TableContainer>
 
-                <Box sx={{ mt: 'auto', pt: 3, display: 'flex', justifyContent: 'flex-end' }}>
-                  <Box sx={{ width: '100%', maxWidth: 350 }}>
-                    <Grid container spacing={1} alignItems="center">
-                      <Grid item xs={6}><Typography variant="body2">Total:</Typography></Grid>
-                      <Grid item xs={6}><TextField size="small" fullWidth value={totalAmount} disabled /></Grid>
-                      <Grid item xs={6}><Typography variant="body2">Discount %:</Typography></Grid>
-                      <Grid item xs={6}><TextField size="small" fullWidth type="number" value={discount} onChange={(e) => setDiscount(e.target.value)} /></Grid>
-                      <Grid item xs={6}><Typography variant="h6" color="#4b6cb7">Grand Total:</Typography></Grid>
-                      <Grid item xs={6}><Typography variant="h6" align="right">{grandTotal}</Typography></Grid>
-                    </Grid>
-                    <Box display="flex" gap={2} mt={2} justifyContent="flex-end">
-                      <Button variant="contained" sx={{ background: "black" }}>Print</Button>
-                    </Box>
+      <Box sx={{ mt: "auto", pt: 3, display: "flex", justifyContent: "flex-end" }}>
+                <Box sx={{ width: 380 }}>
+
+                  {/* Total */}
+                  <Box display="flex" alignItems="center" mb={1}>
+                    <Typography sx={{ width: 140 }}>Total :</Typography>
+                    <Divider sx={{ flexGrow: 1, mx: 1 }} />
+                    <TextField
+                      size="small"
+                      value={totalAmount}
+                      disabled
+                      sx={{ width: 110 }}
+                    />
                   </Box>
+
+                  {/* Discount % */}
+                  <Box display="flex" alignItems="center" mb={1}>
+                    <Typography sx={{ width: 140 }}>Discount % :</Typography>
+                    <Divider sx={{ flexGrow: 1, mx: 1 }} />
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={discount}
+                      onChange={(e) => setDiscount(e.target.value)}
+                      sx={{ width: 110 }}
+                    />
+                  </Box>
+
+                  {/* Discount Amount */}
+                  <Box display="flex" alignItems="center" mb={1}>
+                    <Typography sx={{ width: 140 }}>Discount Amount :</Typography>
+                    <Divider sx={{ flexGrow: 1, mx: 1 }} />
+                    <TextField
+                      size="small"
+                      value={discountAmount}
+                      disabled
+                      sx={{ width: 110 }}
+                    />
+                  </Box>
+
+                  {/* Grand Total */}
+                  <Box display="flex" alignItems="center" mt={2}>
+                    <Typography sx={{ width: 140, fontWeight: "bold" }}>
+                      Grand Total :
+                    </Typography>
+                    <Divider sx={{ flexGrow: 1, mx: 1 }} />
+                    <TextField
+                      size="small"
+                      value={grandTotal}
+                      disabled
+                      sx={{
+                        width: 110,
+                        "& input": {
+                          fontWeight: "bold",
+                          fontSize: "16px"
+                        }
+                      }}
+                    />
+                  </Box>
+
+                  <Box display="flex" justifyContent="flex-end" mt={2}>
+                    <Button variant="contained" sx={{ background: "black" }}>
+                      Print
+                    </Button>
+                  </Box>
+
                 </Box>
+              </Box>
+
+
+
               </CardContent>
             </Card>
           </Grid>

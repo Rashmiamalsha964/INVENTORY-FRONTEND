@@ -24,7 +24,7 @@ export default function Navbar() {
           </Button>
 
           <Button color="inherit" onClick={() => navigate("/add")}>
-            Add Item
+            Add Product
           </Button>
 
           <Button color="inherit" onClick={() => navigate("/billing")}>

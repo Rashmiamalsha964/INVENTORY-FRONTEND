@@ -4,17 +4,20 @@ import { DataGrid } from "@mui/x-data-grid";
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { useNavigate } from "react-router-dom";
 
 export default function ProductStorePage() {
 
+  const navigate = useNavigate();
+
   // Rows without action field
   const rows = [
-    { id: 1, name: "Plastic Chair", price: 14, category: "Plastic", qty: 50 },
-    { id: 2, name: "Electric Fan", price: 20, category: "Electrical", qty: 10 },
-    { id: 3, name: "Glass Bottle", price: 5, category: "Glass Product", qty: 100 },
-    { id: 4, name: "Plastic Table", price: 30, category: "Plastic", qty: 5 },
-    { id: 5, name: "LED Bulb", price: 8, category: "Electrical", qty: 200 },
-  ];
+  //   { id: 1, name: "Plastic Chair", price: 14, category: "Plastic", qty: 50 },
+  //   { id: 2, name: "Electric Fan", price: 20, category: "Electrical", qty: 10 },
+  //   { id: 3, name: "Glass Bottle", price: 5, category: "Glass Product", qty: 100 },
+  //   { id: 4, name: "Plastic Table", price: 30, category: "Plastic", qty: 5 },
+  //   { id: 5, name: "LED Bulb", price: 8, category: "Electrical", qty: 200 },
+  ]
 
   // Columns
   const columns = [
@@ -23,27 +26,38 @@ export default function ProductStorePage() {
     { field: "price", headerName: "Price", width: 100 },
     { field: "category", headerName: "Category", flex: 1, minWidth: 120 },
     { field: "qty", headerName: "Quantity", width: 100 },
-    {
+   {
       field: "action",
-      headerName: "Action",
-      width: 150,
-      sortable: false,
-      renderCell: () => (
+        headerName: "Action",
+        width: 180,
+        sortable: false,
+        renderCell: (params) => (
+          <Box display="flex" gap={1}>
+            {/* Edit Button */}
         <Button
-          size="small"
-          sx={{
-            background: "linear-gradient(90deg, #4b6cb7, #182848)",
-            color: "#fff",
-            textTransform: "none",
-            "&:hover": {
-              background: "linear-gradient(90deg, #182848, #4b6cb7)",
-            },
-          }}
+        size="small"
+        variant="contained"
+        onClick={() =>
+          navigate("/edit-product", { state: params.row })
+        }
         >
-          Edit/Delete
+          Edit
         </Button>
-      ),
-    },
+
+      {/* Delete Button */}
+      <Button
+        size="small"
+        variant="contained"
+        color="error"
+        sx={{ textTransform: "none" }}
+        onClick={() => handleDelete(params.row.id)}
+      >
+        Delete
+      </Button>
+    </Box>
+  ),
+}
+
   ];
 
   return (

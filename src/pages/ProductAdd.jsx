@@ -67,7 +67,7 @@ const saveProduct = async () => {
   return (
     <Box
       sx={{
-        minHeight: "90vh",
+        minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
         background: "linear-gradient(135deg, #4b6cb7, #182848)"

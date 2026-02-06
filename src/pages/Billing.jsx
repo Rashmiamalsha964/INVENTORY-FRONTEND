@@ -21,6 +21,9 @@ import {
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Autocomplete } from "@mui/material";
+import { getProducts } from "../services/ProductService";
+import { useEffect } from "react";
+
 
 const productDatabase = [
   { id: 1, name: "Plastic Chair", price: 1400, stock: 50 },
@@ -29,11 +32,29 @@ const productDatabase = [
   { id: 4, name: "LED Bulb", price: 850, stock: 200 },
 ];
 
+
+
+
+
+
 export default function BillingPage() {
   const [selectedProductId, setSelectedProductId] = useState("");
-  const [formData, setFormData] = useState({ price: "", stock: "", qty: "" });
+  const [formData, setFormData] = useState({ price: 0, stock: 0, qty: 1 });
   const [billItems, setBillItems] = useState([]);
   const [discount, setDiscount] = useState(0);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+  const loadProducts = async () => {
+    try {
+      const data = await getProducts();
+      setProducts(data); // now products come from backend
+    } catch (err) {
+      console.error("Failed to load products:", err);
+    }
+  };
+  loadProducts();
+}, []);
 
   const handleProductChange = (e) => {
     const pId = e.target.value;
@@ -44,20 +65,39 @@ export default function BillingPage() {
     }
   };
 
+ const saveBill = async () => {
+  try {
+    await axios.post("http://localhost:5000/api/bills", {
+      items: billItems.map(({ id, ...rest }) => rest), // remove temp id
+      total: grandTotal
+    });
+    alert("Bill saved successfully!");
+    setBillItems([]);
+    setDiscount(0);
+    setSelectedProductId("");
+    setFormData({ price: 0, stock: 0, qty: 1 });
+  } catch (err) {
+    console.error(err);
+    alert("Failed to save bill");
+  }
+};
+
+
+
   const addToBill = () => {
-    const product = productDatabase.find((p) => p.id === selectedProductId);
-    if (product && formData.qty > 0) {
-      setBillItems([...billItems, {
-        id: Date.now(),
-        name: product.name,
-        price: product.price,
-        qty: formData.qty,
-        total: product.price * formData.qty,
-      }]);
-      setSelectedProductId("");
-      setFormData({ price: "", stock: "", qty: "" });
-    }
-  };
+  const product = products.find((p) => p._id === selectedProductId);
+  if (product && formData.qty > 0) {
+    setBillItems([...billItems, {
+      id: Date.now(),
+      name: product.name,
+      price: product.price,
+      qty: formData.qty,
+      total: product.price * formData.qty,
+    }]);
+    setSelectedProductId("");
+    setFormData({ price: 0, stock: 0, qty: 1 });
+  }
+};
 
   const totalAmount = billItems.reduce((acc, item) => acc + item.total, 0);
   const discountAmount = (totalAmount * discount) / 100;
@@ -90,23 +130,29 @@ export default function BillingPage() {
       </Typography>
       <Divider sx={{ mb: 3 }} />
       <Box display="flex" flexDirection="column" gap={2}>
-        <Autocomplete
-          options={productDatabase}
-          getOptionLabel={(option) => option.name}
-          value={productDatabase.find(p => p.id === selectedProductId) || null}
-          onChange={(event, newValue) => {
-            if (newValue) {
-              setSelectedProductId(newValue.id);
-              setFormData({ price: newValue.price, stock: newValue.stock, qty: 1 });
-            } else {
-              setSelectedProductId("");
-              setFormData({ price: "", stock: "", qty: "" });
-            }
-          }}
-          renderInput={(params) => (
-            <TextField {...params} label="Search Product" size="small" fullWidth />
-          )}
-        />
+       <Autocomplete
+  options={products}         // products from backend
+  getOptionLabel={(option) => option.name}
+  value={products.find(p => p._id === selectedProductId) || null}
+  onChange={(event, newValue) => {
+    if (newValue) {
+      setSelectedProductId(newValue._id);
+      setFormData({
+        price: newValue.price || 0,
+        stock: newValue.qty || 0,
+        qty: 1
+      });
+    } else {
+      setSelectedProductId("");
+      setFormData({ price: 0, stock: 0, qty: 0 });
+    }
+  }}
+  renderInput={(params) => (
+    <TextField {...params} label="Search Product" size="small" fullWidth />
+  )}
+/>
+
+
         <TextField label="Price" size="small" fullWidth value={formData.price} InputProps={{ readOnly: true }} variant="filled" />
         <TextField label="Stock" size="small" fullWidth value={formData.stock} InputProps={{ readOnly: true }} variant="filled" />
         <TextField label="Quantity" type="number" size="small" fullWidth value={formData.qty} onChange={(e) => setFormData({ ...formData, qty: e.target.value })} />

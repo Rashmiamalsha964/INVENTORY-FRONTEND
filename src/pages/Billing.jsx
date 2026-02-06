@@ -23,13 +23,15 @@ import Footer from "../components/Footer";
 import { Autocomplete } from "@mui/material";
 import { getProducts } from "../services/ProductService";
 import { useEffect } from "react";
+import axios from "axios";
+
 
 
 const productDatabase = [
-  { id: 1, name: "Plastic Chair", price: 1400, stock: 50 },
-  { id: 2, name: "Electric Fan", price: 5000, stock: 10 },
-  { id: 3, name: "Glass Bottle", price: 500, stock: 100 },
-  { id: 4, name: "LED Bulb", price: 850, stock: 200 },
+  // { id: 1, name: "Plastic Chair", price: 1400, stock: 50 },
+  // { id: 2, name: "Electric Fan", price: 5000, stock: 10 },
+  // { id: 3, name: "Glass Bottle", price: 500, stock: 100 },
+  // { id: 4, name: "LED Bulb", price: 850, stock: 200 },
 ];
 
 
@@ -68,8 +70,10 @@ export default function BillingPage() {
  const saveBill = async () => {
   try {
     await axios.post("http://localhost:5000/api/bills", {
-      items: billItems.map(({ id, ...rest }) => rest), // remove temp id
-      total: grandTotal
+      items: billItems.map(({ id, ...rest }) => rest),
+      total: totalAmount,
+      discount,
+      grandTotal
     });
     alert("Bill saved successfully!");
     setBillItems([]);
@@ -81,6 +85,7 @@ export default function BillingPage() {
     alert("Failed to save bill");
   }
 };
+
 
 
 
@@ -131,26 +136,26 @@ export default function BillingPage() {
       <Divider sx={{ mb: 3 }} />
       <Box display="flex" flexDirection="column" gap={2}>
        <Autocomplete
-  options={products}         // products from backend
-  getOptionLabel={(option) => option.name}
-  value={products.find(p => p._id === selectedProductId) || null}
-  onChange={(event, newValue) => {
-    if (newValue) {
-      setSelectedProductId(newValue._id);
-      setFormData({
-        price: newValue.price || 0,
-        stock: newValue.qty || 0,
-        qty: 1
-      });
-    } else {
-      setSelectedProductId("");
-      setFormData({ price: 0, stock: 0, qty: 0 });
-    }
-  }}
-  renderInput={(params) => (
-    <TextField {...params} label="Search Product" size="small" fullWidth />
-  )}
-/>
+            options={products}         // products from backend
+            getOptionLabel={(option) => option.name}
+            value={products.find(p => p._id === selectedProductId) || null}
+            onChange={(event, newValue) => {
+            if (newValue) {
+              setSelectedProductId(newValue._id);
+              setFormData({
+                price: newValue.price || 0,
+                stock: newValue.qty || 0,
+                qty: 1
+              });
+            } else {
+              setSelectedProductId("");
+              setFormData({ price: 0, stock: 0, qty: 0 });
+            }
+          }}
+          renderInput={(params) => (
+            <TextField {...params} label="Search Product" size="small" fullWidth />
+          )}
+        />
 
 
         <TextField label="Price" size="small" fullWidth value={formData.price} InputProps={{ readOnly: true }} variant="filled" />
@@ -259,12 +264,23 @@ export default function BillingPage() {
                     />
                   </Box>
 
-                  <Box display="flex" justifyContent="flex-end" mt={2}>
-                    <Button variant="contained" sx={{ background: "black" }}>
+                 <Box display="flex" justifyContent="flex-end" mt={2} gap={2}>
+                    <Button
+                      variant="contained"
+                      sx={{ background: "green" }}
+                      onClick={saveBill}   // <-- this will call your saveBill function
+                    >
+                      Save Bill
+                    </Button>
+
+                    <Button
+                      variant="contained"
+                      sx={{ background: "black" }}
+                      onClick={() => window.print()}
+                    >
                       Print
                     </Button>
                   </Box>
-
                 </Box>
               </Box>
 

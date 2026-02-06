@@ -4,9 +4,17 @@ import ProductAdd from "./pages/ProductAdd";
 import ProductStore from "./pages/ProductStore";
 import Billing from "./pages/Billing";
 import EditProduct from "./pages/EditProduct";
+// import TestConnection from "./components/TestConnection";
 
 function App(){
   return(
+
+
+    // <div>
+    //   <h1>Frontend-Backend Test</h1>
+    //   <TestConnection />
+    // </div>
+    
     <Routes>
       <Route path="/" element={<Login/>}/>
       <Route path="/add" element={<ProductAdd/>}/> 

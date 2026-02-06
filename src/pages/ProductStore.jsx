@@ -5,19 +5,19 @@ import { DataGrid } from "@mui/x-data-grid";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getProducts, deleteProduct } from "../services/ProductService";
+
+
+
+
 
 export default function ProductStorePage() {
 
   const navigate = useNavigate();
 
-  // Rows without action field
-  const rows = [
-  //   { id: 1, name: "Plastic Chair", price: 14, category: "Plastic", qty: 50 },
-  //   { id: 2, name: "Electric Fan", price: 20, category: "Electrical", qty: 10 },
-  //   { id: 3, name: "Glass Bottle", price: 5, category: "Glass Product", qty: 100 },
-  //   { id: 4, name: "Plastic Table", price: 30, category: "Plastic", qty: 5 },
-  //   { id: 5, name: "LED Bulb", price: 8, category: "Electrical", qty: 200 },
-  ]
+ const [rows, setRows] = useState([]);
+
 
   // Columns
   const columns = [
@@ -35,14 +35,14 @@ export default function ProductStorePage() {
           <Box display="flex" gap={1}>
             {/* Edit Button */}
         <Button
-        size="small"
-        variant="contained"
-        onClick={() =>
-          navigate("/edit-product", { state: params.row })
-        }
-        >
-          Edit
-        </Button>
+  size="small"
+  variant="contained"
+  onClick={() =>
+    navigate("/edit-product", { state: { ...params.row, _id: params.row._id } })
+  }
+>
+  Edit
+</Button>
 
       {/* Delete Button */}
       <Button
@@ -59,6 +59,40 @@ export default function ProductStorePage() {
 }
 
   ];
+
+ useEffect(() => {
+  loadProducts();
+}, []);
+
+const loadProducts = async () => {
+  try {
+    const data = await getProducts();
+
+    const formatted = data.map((p) => ({
+      id: p._id,     // important for DataGrid
+      name: p.name,
+      price: p.price,
+      category: p.category,
+      qty: p.qty,
+    }));
+
+    setRows(formatted);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const handleDelete = async (id) => {
+  if (window.confirm("Delete this product?")) {
+    await deleteProduct(id);
+    loadProducts();
+  }
+};
+
+
+
+
+
 
   return (
     <Box

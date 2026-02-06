@@ -9,11 +9,15 @@ import {
   MenuItem
 } from "@mui/material";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
+import { createProduct } from "../services/ProductService";
+import { useNavigate } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 export default function ProductAdd() {
+
+  const navigate = useNavigate();
 
   const [product, setProduct] = useState({
     name: "",
@@ -38,10 +42,27 @@ export default function ProductAdd() {
     });
   };
 
-  const saveProduct = () => {
-    console.log(product);
-    alert("Product Added Successfully");
-  };
+const saveProduct = async () => {
+  try {
+    // Call backend
+    const saved = await createProduct(product);
+
+    // Show success message
+    alert(`Product "${saved.name}" added successfully!`);
+
+    // Clear the form for next product
+    clearForm();
+
+    // Optional: If you have a parent state or context for products,
+    // you can update the table immediately without reload:
+    // setProducts(prev => [...prev, saved]);
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to add product");
+  }
+};
+
 
   return (
     <Box

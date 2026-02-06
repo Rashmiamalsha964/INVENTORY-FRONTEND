@@ -10,11 +10,16 @@ import {
 } from "@mui/material";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import { useLocation } from "react-router-dom";
-
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { updateProduct as updateProductAPI } from "../services/ProductService";
+import { useNavigate } from "react-router-dom";
+
 
 export default function EditProduct() {
+
+  const navigate = useNavigate();
+
 
   const location = useLocation();
 
@@ -27,22 +32,42 @@ export default function EditProduct() {
 
   // Load selected row data
   useEffect(() => {
-    if (location.state) {
-      setProduct(location.state);
-    }
-  }, [location.state]);
-
-  const handleChange = (e) => {
+  if (location.state) {
+    const row = location.state;
     setProduct({
-      ...product,
-      [e.target.name]: e.target.value
+      ...row,
+      _id: row._id || row.id, // fallback if _id missing
+      price: Number(row.price),
+      qty: Number(row.qty)
     });
-  };
+  }
+}, [location.state]);
 
-  const updateProduct = () => {
-    console.log("Updated Product:", product);
+  const updateProduct = async () => {
+  try {
+    // Remove DataGrid `id` before sending
+    const { id, ...payload } = product;
+
+    await updateProductAPI(product._id, payload);
+
     alert("Product Updated Successfully");
-  };
+    navigate("/store");
+  } catch (err) {
+    console.error("Error updating product:", err.response ? err.response.data : err);
+    alert("Failed to update product");
+  }
+};
+
+const handleChange = (e) => {
+  const { name, value } = e.target;
+
+  setProduct({
+    ...product,
+    // Convert price and qty to numbers
+    [name]: name === "price" || name === "qty" ? Number(value) : value,
+  });
+};
+
 
   return (
     <Box
@@ -122,9 +147,9 @@ export default function EditProduct() {
             </TextField>
 
             <Box display="flex" gap={2} mt={2}>
-              <Button fullWidth variant="outlined">
-                Cancel
-              </Button>
+             <Button fullWidth variant="outlined" onClick={() => navigate("/store")}>
+              Cancel
+            </Button>
 
               <Button
                 fullWidth
